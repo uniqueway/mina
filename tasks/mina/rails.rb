@@ -14,7 +14,7 @@ set :shared_dirs, fetch(:shared_dirs, []).push('log', 'tmp/cache', fetch(:compil
 desc 'Starts an interactive console.'
 task :console do
   set :execution_mode, :exec
-  in_path "#{fetch(:current_path)}" do
+  in_path "#{fetch :current_path}/#{fetch :project}" do
     command %{#{fetch(:rails)} console}
   end
 end
