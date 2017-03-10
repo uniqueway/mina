@@ -21,13 +21,15 @@ namespace :deploy do
     comment %{Symlinking shared paths}
 
     fetch(:shared_dirs, []).each do |linked_dir|
-      command %{mkdir -p #{File.dirname("./#{linked_dir}")}}
-      command %{rm -rf "./#{linked_dir}"}
-      command %{ln -s "#{fetch(:shared_path)}/#{linked_dir}" "./#{linked_dir}"}
+      target_linked_dir = "#{fetch(:project)}/" + linked_dir
+      command %{mkdir -p #{File.dirname("./#{target_linked_dir}")}}
+      command %{rm -rf "./#{target_linked_dir}"}
+      command %{ln -s "#{fetch(:shared_path)}/#{linked_dir}" "./#{target_linked_dir}"}
     end
 
     fetch(:shared_files, []).each do |linked_path|
-      command %{ln -sf "#{fetch(:shared_path)}/#{linked_path}" "./#{linked_path}"}
+      target_linked_path = "#{fetch(:project)}/" + linked_path
+      command %{ln -sf "#{fetch(:shared_path)}/#{linked_path}" "./#{target_linked_path}"}
     end
   end
 

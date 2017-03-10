@@ -30,16 +30,18 @@ end
 namespace :rails do
   desc 'Migrate database'
   task :db_migrate do
-    if fetch(:force_migrate)
-      comment %{Migrating database}
-      command %{#{fetch(:rake)} db:migrate}
-    else
-      command check_for_changes_script(
-        at: fetch(:migration_dirs),
-        skip: %{echo "-----> DB migrations unchanged; skipping DB migration"},
-        changed: %{echo "-----> Migrating database"
-          #{echo_cmd("#{fetch(:rake)} db:migrate")}}
-      ), quiet: true
+    in_path "#{fetch(:deploy_to)}" do
+      if fetch(:force_migrate)
+        comment %{Migrating database}
+        command %{cd $build_path/#{fetch(:project)}; #{fetch(:rake)} db:migrate}
+      else
+        command check_for_changes_script(
+          at: fetch(:migration_dirs),
+          skip: %{echo "-----> DB migrations unchanged; skipping DB migration"},
+          changed: %{echo "-----> Migrating database"
+            #{echo_cmd("cd $build_path/#{fetch(:project)}; #{fetch(:rake)} db:migrate")}}
+        ), quiet: true
+      end
     end
   end
 
@@ -57,16 +59,18 @@ namespace :rails do
 
   desc 'Precompiles assets (skips if nothing has changed since the last release).'
   task :assets_precompile do
-    if fetch(:force_asset_precompile)
-      comment %{Precompiling asset files}
-      command %{#{fetch(:rake)} assets:precompile}
-    else
-      command check_for_changes_script(
-        at: fetch(:asset_dirs),
-        skip: %{echo "-----> Skipping asset precompilation"},
-        changed: %{echo "-----> Precompiling asset files"
-          #{echo_cmd "#{fetch(:rake)} assets:precompile"}}
-      ), quiet: true
+    in_path "#{fetch(:deploy_to)}" do
+      if fetch(:force_asset_precompile)
+        comment %{Precompiling asset files}
+        command %{cd $build_path/#{fetch(:project)}; #{fetch(:rake)} assets:precompile}
+      else
+        command check_for_changes_script(
+          at: fetch(:asset_dirs),
+          skip: %{echo "-----> Skipping asset precompilation"},
+          changed: %{echo "-----> Precompiling asset files"
+            #{echo_cmd "cd $build_path/#{fetch(:project)}; #{fetch(:rake)} assets:precompile"}}
+        ), quiet: true
+      end
     end
   end
 end
