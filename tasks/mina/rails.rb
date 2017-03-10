@@ -77,7 +77,8 @@ end
 
 def check_for_changes_script(options)
   diffs = options[:at].map do |path|
-    %{diff -qrN "#{fetch(:current_path)}/#{path}" "./#{path}" 2>/dev/null}
+    command %{pwd}
+    %{diff -qrN "#{fetch :current_path}/#{fetch :project}/#{path}" "./#{path}" 2>/dev/null}
   end.join(' && ')
 
   %{
