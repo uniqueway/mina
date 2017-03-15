@@ -59,7 +59,7 @@ namespace :rails do
 
   desc 'Precompiles assets (skips if nothing has changed since the last release).'
   task :assets_precompile do
-    in_path "#{fetch(:deploy_to)}" do
+    in_path "#{fetch :deploy_to}" do
       if fetch(:force_asset_precompile)
         comment %{Precompiling asset files}
         command %{cd $build_path/#{fetch(:project)}; #{fetch(:rake)} assets:precompile}
@@ -78,7 +78,7 @@ end
 def check_for_changes_script(options)
   diffs = options[:at].map do |path|
     command %{pwd}
-    %{diff -qrN "#{fetch :current_path}/#{fetch :project}/#{path}" "./#{path}" 2>/dev/null}
+    %{diff -qrN "#{fetch :current_path}/#{fetch :project}/#{path}" "$build_path/#{fetch :project}/#{path}" 2>/dev/null}
   end.join(' && ')
 
   %{
